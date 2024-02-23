@@ -70,11 +70,12 @@ const errorLink = onError(({ graphQLErrors, operation, forward }) => {
   
 
   export const client = new ApolloClient({
-    uri: "http://localhost:3000/graphql",
+    uri: "http://localhost:3333/graphql",
     cache: new InMemoryCache({
       typePolicies: {
         Query: {
           fields: {
+            // Fix caching problem when uploading a post
             getCommentsByPostId: {
               merge(existing, incoming) {
                 return incoming
