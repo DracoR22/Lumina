@@ -5,6 +5,7 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './modules/auth/auth.module';
+import { UserModule } from './modules/user/user.module';
 
 @Module({
   imports: [
@@ -16,7 +17,8 @@ import { AuthModule } from './modules/auth/auth.module';
       context: ({ req, res }) => ({ req, res })
     }),
     ConfigModule.forRoot({}),
-    AuthModule
+    AuthModule,
+    UserModule
   ],
   providers: [PrismaService],
 })

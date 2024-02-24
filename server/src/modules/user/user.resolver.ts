@@ -12,7 +12,6 @@ export class UserResolver {
         private readonly authService: AuthService,
         private readonly userService: UserService
     ) {}
-
     //------------------------------------------//REGISTER MUTATION//-----------------------------//
     @Mutation(() => RegisterResponse)
     async register(
