@@ -89,5 +89,5 @@ const errorLink = onError(({ graphQLErrors, operation, forward }) => {
     headers: {
       "Content-Type": "application/json",
     },
-    link: ApolloLink.from([errorLink ]),
+   
   })

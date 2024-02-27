@@ -1,7 +1,10 @@
+import MainLayout from "../layouts/main-layout"
 
 const Feed = () => {
   return (
-    <div>Feed</div>
+    <MainLayout>
+       Feed
+    </MainLayout>
   )
 }
 
