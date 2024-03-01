@@ -5,7 +5,7 @@ import { User } from "@prisma/client";
 import { Request, Response } from "express";
 import { PrismaService } from "src/common/db/prisma.service";
 import { LoginDto, RegisterDto } from "./dto/auth.dto";
-import bcrypt from "bcryptjs"
+import bcrypt from "bcrypt"
 
 @Injectable()
 export class AuthService {
@@ -88,7 +88,11 @@ export class AuthService {
             }
         })
 
-        if (user && (await bcrypt.compare(loginDto.password, user.password))) {
+        // if (user && (await bcrypt.compare(loginDto.password, user.password))) {
+        //     return user
+        // }
+
+        if (user && loginDto.password === user.password) {
             return user
         }
 
@@ -97,27 +101,31 @@ export class AuthService {
 
     //--------------------------------------------//SIGN UP//----------------------------------------//
     async register(registerDto: RegisterDto, res: Response) {
-        const existingUser = await this.prisma.user.findUnique({
+        const existingUser = await this.prisma.user.findFirst({
             where: {
                 email: registerDto.email
             }
         })
 
          if (existingUser) {
-            throw new Error('Email already in use')
+            throw new BadRequestException({ email: 'Email already in use' })
          }
 
          // Hash password
-         const hashedPassword = await bcrypt.hash(registerDto.password, 10)
+        //  const hashedPassword = bcrypt.hash(registerDto.password, 10)
 
          // Create user
          const user = await this.prisma.user.create({
             data: {
                 fullname: registerDto.fullname,
-                password: hashedPassword,
-                email: registerDto.email
+                password: registerDto.password,
+                email: registerDto.email,
             }
          })
+
+         if (!user) {
+            throw new BadRequestException({ user: 'Could not create user' })
+         }
 
          return this.issueToken(user, res)
     }
@@ -127,12 +135,13 @@ export class AuthService {
         const user = await this.validateUser(loginDto)
 
         if (!user) {
-            throw new UnauthorizedException('Invalid credentials')
+            throw new BadRequestException({ invalidCredentials: 'Invalid credentials' })
         }
 
         return this.issueToken(user, res)
     }
 
+    //------------------------------------------//LOGOUT//------------------------------------------//
     async logout(res: Response) {
         res.clearCookie('access_token')
         res.clearCookie('refresh_token')

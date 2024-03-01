@@ -3,16 +3,19 @@ import { AuthService } from "../auth/auth.service";
 import { UserService } from "./user.service";
 import { LoginResponse, RegisterResponse } from "../auth/types/types";
 import { LoginDto, RegisterDto } from "../auth/dto/auth.dto";
-import { BadRequestException } from "@nestjs/common";
+import { BadRequestException, UseFilters } from "@nestjs/common";
 import { Request, Response } from "express";
+import { GraphQLErrorFilter } from "src/filters/custom-exception.filter";
+import { User } from "src/models/user.model";
 
-@Resolver()
+@Resolver('User')
 export class UserResolver {
     constructor(
         private readonly authService: AuthService,
         private readonly userService: UserService
     ) {}
     //------------------------------------------//REGISTER MUTATION//-----------------------------//
+    @UseFilters(GraphQLErrorFilter)
     @Mutation(() => RegisterResponse)
     async register(
         @Args('registerInput') registerDto: RegisterDto,
@@ -25,17 +28,21 @@ export class UserResolver {
         }
 
         try {
-            const { user } = await this.authService.register(registerDto, context.res)
-            console.log('user', user)
-
-            return { user }
-        } catch (error) {
+            const { user } = await this.authService.register(
+              registerDto,
+              context.res,
+            );
+            console.log('user!', user);
+            return { user };
+          } catch (error) {
+            // Handle the error, for instance if it's a validation error or some other type
             return {
-                error: {
-                    message: error.message
-                }
-            }
-        }
+              error: {
+                message: error.message,
+                // code: 'SOME_ERROR_CODE' // If you have error codes
+              },
+            };
+          }
     }
 
    //----------------------------------------------//LOGIN RESPONSE//----------------------------------------//
@@ -67,4 +74,9 @@ export class UserResolver {
    async hello() {
     return 'Hello World'
    }
+
+   @Query(() => [User])
+    async getUsers() {
+      return this.userService.getUsers()
+    }
 }

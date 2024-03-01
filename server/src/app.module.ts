@@ -6,6 +6,8 @@ import { join } from 'path';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './modules/auth/auth.module';
 import { UserModule } from './modules/user/user.module';
+import { UserResolver } from './modules/user/user.resolver';
+import { UserService } from './modules/user/user.service';
 
 @Module({
   imports: [
@@ -14,12 +16,13 @@ import { UserModule } from './modules/user/user.module';
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       sortSchema: true,
       playground: true,
+      introspection: true,
       context: ({ req, res }) => ({ req, res })
     }),
     ConfigModule.forRoot({}),
     AuthModule,
     UserModule
   ],
-  providers: [PrismaService],
+  providers: [PrismaService, UserResolver, UserService],
 })
 export class AppModule {}
