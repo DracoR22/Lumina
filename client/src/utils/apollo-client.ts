@@ -1,5 +1,6 @@
 import { ApolloClient, InMemoryCache, NormalizedCacheObject, gql, Observable, ApolloLink } from '@apollo/client'
 import { onError } from "@apollo/client/link/error"
+import { createUploadLink } from 'apollo-upload-client'
 
 async function refreshToken(client: ApolloClient<NormalizedCacheObject>) {
     try {
@@ -60,13 +61,13 @@ const errorLink = onError(({ graphQLErrors, operation, forward }) => {
     }
   })
 
-  // const uploadLink = createUploadLink({
-  //   uri: "http://localhost:3000/graphql",
-  //   credentials: "include",
-  //   headers: {
-  //     "apollo-require-preflight": "true",
-  //   },
-  // })
+  const uploadLink = createUploadLink({
+    uri: "http://localhost:3000/graphql",
+    credentials: "include",
+    headers: {
+      "apollo-require-preflight": "true",
+    },
+  })
   
 
   export const client = new ApolloClient({
@@ -89,5 +90,6 @@ const errorLink = onError(({ graphQLErrors, operation, forward }) => {
     headers: {
       "Content-Type": "application/json",
     },
-   
+    // @ts-ignore
+   link: ApolloLink.from([uploadLink])
   })

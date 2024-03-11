@@ -4,7 +4,7 @@ import { useLocation } from "react-router-dom"
 import Sidenav from "../components/side-nav"
 import TopNav from "../components/top-nav"
 
-function MainLayout({ children }: { children: React.ReactNode }) {
+function UploadLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
       <header>
@@ -24,4 +24,4 @@ function MainLayout({ children }: { children: React.ReactNode }) {
   )
 }
 
-export default MainLayout
+export default UploadLayout
